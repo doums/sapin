@@ -1,0 +1,52 @@
+{
+  "productName": "sapin",
+  "version": "0.1.0",
+  "identifier": "fr.deip.sapin",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "trayIcon": {
+      "id": "main",
+      "iconPath": "icons/32x32.png"
+    },
+    "windows": [
+      {
+        "label": "main",
+        "title": "sapin",
+        "width": 100,
+        "height": 100,
+        "center": true,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "closable": false,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "focus": false,
+        "shadow": false,
+        "transparent": true,
+        "zoomHotkeysEnabled": false,
+        "visibleOnAllWorkspaces": true,
+        "skipTaskbar": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
