@@ -1,0 +1,35 @@
+{
+  "name": "sapin",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+    "fmt": "prettier --write --ignore-unknown \"**/*\"",
+    "tauri": "tauri"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-shell": ">=2.0.0-rc.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.1",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@tauri-apps/cli": "2.0.0-rc.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.40",
+    "prettier": "^3.3.3",
+    "prettier-plugin-svelte": "^3.2.6",
+    "svelte": "^4.2.18",
+    "svelte-check": "^3.8.4",
+    "tailwindcss": "^3.4.7",
+    "tslib": "^2.6.3",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4"
+  }
+}
