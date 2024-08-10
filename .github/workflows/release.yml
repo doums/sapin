@@ -24,6 +24,9 @@ jobs:
     runs-on: 'windows-latest'
     env:
       ARTIFACTS_DIR: artifacts
+    outputs:
+      sha256: ${{ steps.gen_sha256.outputs.sha256 }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -51,10 +54,14 @@ jobs:
           mv -f src-tauri/target/x86_64-pc-windows-msvc/release/sapin.exe $ARTIFACTS_DIR/
 
       - name: Gen sha256
-        shell: bash
+        id: gen_sha256
         working-directory: ${{ env.ARTIFACTS_DIR }}
+        shell: bash
         run: |
-          sha256sum sapin.exe > sapin.exe.sha256sum
+          sha256=$(sha256sum sapin.exe)
+          echo "$sha256"
+          echo "sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "$sha256" > sapin.exe.sha256sum
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -68,11 +75,20 @@ jobs:
     name: Publish GH Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SHA256: ${{ needs.build.outputs.sha256 }}
     steps:
       - name: Download binary artifact
         uses: actions/download-artifact@v4
         with:
           name: sapin-exe
+      - name: Integrity check
+        shell: bash
+        run: |
+          sha256sum -c sapin.exe.sha256sum
+          [ "$SHA256" == "$(cat sapin.exe.sha256sum)" ] && echo "OK"
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
