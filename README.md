@@ -4,15 +4,14 @@
 
 ## install
 
-_release incoming soon_
-
 Sapin is a portable executable, no installation is required. \
-Download the latest binary from releases and run it.
+Download the latest binary from [releases](https://github.com/doums/sapin/releases/latest)
+and run it.
 
 ## configuration
 
-You can change things like the crosshair color, transparency, shape (crosshair or dot),
-size, thickness, gap etc...
+You can change things like the crosshair color, shape (crosshair or dot),
+transparency, size, thickness, gap etc…
 
 Sapin ship with a tray icon, right click on it to access the settings. \
 Click _Config_ to open the configuration file location and open
