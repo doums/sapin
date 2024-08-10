@@ -1,0 +1,83 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name for the release"
+        required: false
+        default: dev
+      publish:
+        type: boolean
+        description: Publish Release
+        required: true
+        default: false
+  push:
+    tags:
+      - v*
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build
+    runs-on: 'windows-latest'
+    env:
+      ARTIFACTS_DIR: artifacts
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Bun
+        uses: 'oven-sh/setup-bun@v2'
+        with:
+          bun-version: latest
+
+      - name: Install JS deps
+        run: bun i
+
+      - name: Build app
+        shell: bash
+        run: |
+          mkdir dist
+          mkdir $ARTIFACTS_DIR
+          bun tauri build -t x86_64-pc-windows-msvc
+          mv -f src-tauri/target/x86_64-pc-windows-msvc/release/sapin.exe $ARTIFACTS_DIR/
+
+      - name: Gen sha256
+        shell: bash
+        working-directory: ${{ env.ARTIFACTS_DIR }}
+        run: |
+          sha256sum sapin.exe > sapin.exe.sha256sum
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sapin-exe
+          path: ${{ env.ARTIFACTS_DIR }}
+          retention-days: 2
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publish == true
+    name: Publish GH Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binary artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sapin-exe
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.event_name == 'workflow_dispatch' && github.inputs.tag_name || github.ref_name }}
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.inputs.tag_name || github.ref_name }}
+          files: |
+            sapin.exe
+            sapin.exe.sha256sum
