@@ -6,7 +6,7 @@ use anyhow::Result;
 use tauri::{PhysicalPosition, PhysicalSize, Size, WebviewWindow};
 use tracing::{error, instrument, trace};
 
-use crate::config::config::AppConfig;
+use crate::config::app_config::AppConfig;
 
 #[instrument(skip_all)]
 pub fn setup(window: &WebviewWindow, config: &AppConfig) -> Result<()> {

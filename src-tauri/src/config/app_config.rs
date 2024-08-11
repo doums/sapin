@@ -57,11 +57,14 @@ impl AppConfig {
         if config_file.is_none() {
             warn!("failed to read config file, using default config");
         }
+        config_file
+            .as_ref()
+            .inspect(|cfg| info!("config file: {}", cfg.full_path().display()));
         let config: AppConfig = AppConfig::from(&config_file);
         debug!("config: {:?}", config);
         let window = app.get_webview_window("main").unwrap();
         setup(&window, &config).ok();
-        info!("config loaded");
+        debug!("config loaded");
 
         // notify the frontend
         if notify {

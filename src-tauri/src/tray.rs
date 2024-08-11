@@ -10,9 +10,11 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::ShellExt;
 use tracing::{debug, error, info, instrument, trace, warn};
 
-use crate::config::config::AppConfig;
+use crate::config::app_config::AppConfig;
 use crate::config::config_file::ConfigFile;
-use crate::{util, APP_NAME};
+use crate::util;
+#[cfg(not(target_os = "linux"))]
+use crate::APP_NAME;
 
 pub const TRAY_ICON_ID: &str = "main";
 pub const TRAY_MENU_ID: &str = "tray_menu";

@@ -5,7 +5,7 @@
 use tauri::State;
 use tracing::{debug, error, instrument};
 
-use crate::config::config::AppConfig;
+use crate::config::app_config::AppConfig;
 use crate::error::CmdError;
 use crate::CfgState;
 

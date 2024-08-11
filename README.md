@@ -38,6 +38,11 @@ bun i
 bun tauri dev
 ```
 
+Custom log level can be set via the `RUST_LOG` env variable, for example:
+`RUST_LOG=info,sapin=trace`
+
+```shell
+
 #### build
 
 ```shell

@@ -6,7 +6,7 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter};
 use tracing::{error, instrument, trace};
 
-use crate::config::config::AppConfig;
+use crate::config::app_config::AppConfig;
 
 pub const CONFIG_RELOADED_EVENT: &str = "config-reloaded";
 

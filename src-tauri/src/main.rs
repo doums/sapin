@@ -16,10 +16,12 @@ mod window;
 
 use std::sync::Mutex;
 use tauri::Manager;
-use tracing::{debug, error};
+use tracing::debug;
+#[cfg(not(dev))]
+use tracing::error;
 
 use crate::command::config;
-use crate::config::config::AppConfig;
+use crate::config::app_config::AppConfig;
 use crate::config::config_file::ConfigFile;
 
 pub const APP_NAME: &str = "sapin";
