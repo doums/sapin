@@ -15,7 +15,7 @@ transparency, size, thickness, gap etc…
 
 Sapin ship with a tray icon, right click on it to access the settings. \
 Click _Config_ to open the configuration file location and open
-`config.toml` with a text editor to modify it. \
+`config.toml` with notepad (or any text editor) to modify it. \
 The crosshair overlay is hot reloaded when the config file is saved.
 
 ## FAQ
@@ -27,7 +27,7 @@ Windows (tested on Windows 10 and 11).
 ### Is it a cheat?
 
 No, Sapin is just an overlay, it doesn't interact with the game in any way. \
-It opens a window on top of all other windows, centered, and draws the crosshair on it.
+It opens a window on top of all other windows, centered, and draws the crosshair on it. \
 Feel free to check the source code.
 
 ### Which games are supported?
@@ -45,8 +45,8 @@ I can't guarantee that you won't get banned, use at your own risk.
 
 ### Windows flags it as a virus
 
-It's a false positive, Sapin is open source, feel free to check the source code.
-Signing the executable would fix the issue, but it costs money, so I'm not \
+It's a false positive, Sapin is open source, feel free to check the source code. \
+Signing the executable would fix the issue, but it costs money, so I'm not
 planning to do it. \
 If Windows Defender is blocking the executable, you can add an exception for it.
 
