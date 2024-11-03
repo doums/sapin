@@ -5,7 +5,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod command;
+mod cmd;
 mod config;
 mod error;
 mod event;
@@ -14,15 +14,16 @@ mod tray;
 mod util;
 mod window;
 
+use crate::cmd::config::config;
+use crate::cmd::log::log_js;
+use crate::config::app_config::AppConfig;
+use crate::config::config_file::ConfigFile;
+
 use std::sync::Mutex;
 use tauri::Manager;
 use tracing::debug;
 #[cfg(not(dev))]
 use tracing::error;
-
-use crate::command::config;
-use crate::config::app_config::AppConfig;
-use crate::config::config_file::ConfigFile;
 
 pub const APP_NAME: &str = "sapin";
 
@@ -34,7 +35,7 @@ async fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![config])
+        .invoke_handler(tauri::generate_handler![config, log_js])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
             #[cfg(dev)]

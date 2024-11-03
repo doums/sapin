@@ -4,6 +4,9 @@
 
 import './app.css';
 import App from './App.svelte';
+import { init as logInit } from './log';
+
+logInit();
 
 const app = new App({
   target: document.getElementById('app')!,
