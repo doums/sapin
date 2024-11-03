@@ -50,6 +50,11 @@ Signing the executable would fix the issue, but it costs money, so I'm not
 planning to do it. \
 If Windows Defender is blocking the executable, you can add an exception for it.
 
+### The crosshair is not pixel perfect or a bit blurry
+
+This could be due to Windows display scaling factor. \
+Check in settings: _System_ > _Display_ > _Scale_
+
 ## development
 
 #### prerequisites

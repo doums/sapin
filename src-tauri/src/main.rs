@@ -21,9 +21,9 @@ use crate::config::config_file::ConfigFile;
 
 use std::sync::Mutex;
 use tauri::Manager;
-use tracing::debug;
 #[cfg(not(dev))]
 use tracing::error;
+use tracing::info;
 
 pub const APP_NAME: &str = "sapin";
 
@@ -63,7 +63,7 @@ async fn main() {
             }
 
             tray::setup(app.handle())?;
-            debug!("SETUP DONE");
+            info!("app setup done");
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())

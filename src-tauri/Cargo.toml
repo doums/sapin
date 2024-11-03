@@ -1,6 +1,6 @@
 [package]
 name = "sapin"
-version = "0.1.1"
+version = "0.2.0"
 description = "Simple crosshair overlay"
 authors = ["pierre <dommerc.pierre@gmail.com>"]
 edition = "2021"
@@ -23,7 +23,7 @@ tracing-subscriber = { version = "0.3.1", features = [
 ] }
 strum = { version = "0.26", features = ["derive"] }
 toml = "0.8.2"
-notify = { version = "6.1.1", features = ["serde"] }
+notify = { version = "7.0.0", features = ["serde"] }
 
 [profile.release]
 codegen-units = 1

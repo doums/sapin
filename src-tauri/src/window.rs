@@ -4,38 +4,65 @@
 
 use anyhow::Result;
 use tauri::{PhysicalPosition, PhysicalSize, Size, WebviewWindow};
-use tracing::{error, instrument, trace};
+use tracing::{debug, error, info, instrument, trace};
 
 use crate::config::app_config::AppConfig;
 
-#[instrument(skip_all)]
-pub fn setup(window: &WebviewWindow, config: &AppConfig) -> Result<()> {
-    trace!("___setup window");
-    let canvas_size = config.shape.size();
-    window
-        .set_size(Size::Physical(PhysicalSize {
-            width: canvas_size,
-            height: canvas_size,
-        }))
-        .inspect_err(|e| error!("failed to resize window: {}", e))?;
+// NOTE: Tauri `center` implementation fails to center the window properly
+// on the screen, so let's implement it
+#[instrument(skip(window))]
+fn center(window: &WebviewWindow, size: u32) -> Result<()> {
+    trace!("center window");
     let monitor = window
         .current_monitor()
         .inspect_err(|e| error!("failed to get current monitor: {}", e))?;
-    let offset = canvas_size / 2;
+    let offset = size / 2;
     if let Some(m) = monitor {
-        let size = m.size();
+        let res = m.size();
+        debug!("monitor resolution: {:?}", res);
+        let position = PhysicalPosition::new((res.width / 2) - offset, (res.height / 2) - offset);
+        debug!("centering window at: {:?}", position);
         window
-            .set_position(PhysicalPosition::new(
-                (size.width / 2) - offset,
-                (size.height / 2) - offset,
-            ))
+            .set_position(position)
             .inspect_err(|e| error!("failed to move window: {}", e))?;
     }
+    Ok(())
+}
+
+#[instrument(skip(window))]
+fn resize(window: &WebviewWindow, size: u32) -> Result<()> {
+    trace!("resize window");
+    window
+        .set_size(Size::Physical(PhysicalSize {
+            width: size,
+            height: size,
+        }))
+        .inspect_err(|e| error!("failed to resize window: {}", e))?;
+    Ok(())
+}
+
+#[instrument(skip_all)]
+pub fn setup(window: &WebviewWindow, config: &AppConfig) -> Result<()> {
+    debug!("setup window");
+    let scale = window
+        .scale_factor()
+        .inspect_err(|e| error!("failed to get window scale factor: {}", e))?;
+    let canvas_size = config.shape.size();
+    let size = if scale != 1.0 {
+        debug!("scale factor: {scale}");
+        (scale * canvas_size as f64).round_ties_even() as u32
+    } else {
+        canvas_size
+    };
+    debug!("window pixel size: {size}");
+    resize(window, size)?;
+    center(window, size)?;
 
     window
         .set_content_protected(config.protected)
         .inspect_err(|e| error!("failed to set content protected: {}", e))
         .ok();
 
+    info!("window setup done");
     Ok(())
 }
