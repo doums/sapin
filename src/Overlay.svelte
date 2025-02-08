@@ -14,7 +14,7 @@
   let color: string;
   let alpha: number;
   let debug: boolean;
-  let canvas: HTMLCanvasElement = $state();
+  let canvas: HTMLCanvasElement | undefined = $state();
   let size: number;
 
   const shapeSize = (shape: Shape) => {
@@ -26,6 +26,10 @@
   };
 
   const updateCanvas = () => {
+    if (!canvas) {
+      console.error('canvas not set');
+      return;
+    }
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');

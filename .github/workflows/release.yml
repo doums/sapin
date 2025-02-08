@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Tag name for the release"
+        description: 'Tag name for the release'
         required: false
         default: dev
       publish:
@@ -38,7 +38,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install bun
-        uses: 'oven-sh/setup-bun@v2'
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
