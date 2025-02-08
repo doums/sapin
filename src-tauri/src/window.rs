@@ -7,20 +7,23 @@ use tauri::{PhysicalPosition, PhysicalSize, Size, WebviewWindow};
 use tracing::{debug, error, info, instrument, trace};
 
 use crate::config::app_config::AppConfig;
+use crate::config::app_config::ShapeSize;
 
 // NOTE: Tauri `center` implementation fails to center the window properly
 // on the screen, so let's implement it
 #[instrument(skip(window))]
-fn center(window: &WebviewWindow, size: u32) -> Result<()> {
+fn center(window: &WebviewWindow, size: &ShapeSize) -> Result<()> {
     trace!("center window");
     let monitor = window
         .current_monitor()
         .inspect_err(|e| error!("failed to get current monitor: {}", e))?;
-    let offset = size / 2;
+    let x_offset = size.width / 2;
+    let y_offset = size.height / 2;
     if let Some(m) = monitor {
         let res = m.size();
         debug!("monitor resolution: {:?}", res);
-        let position = PhysicalPosition::new((res.width / 2) - offset, (res.height / 2) - offset);
+        let position =
+            PhysicalPosition::new((res.width / 2) - x_offset, (res.height / 2) - y_offset);
         debug!("centering window at: {:?}", position);
         window
             .set_position(position)
@@ -30,12 +33,12 @@ fn center(window: &WebviewWindow, size: u32) -> Result<()> {
 }
 
 #[instrument(skip(window))]
-fn resize(window: &WebviewWindow, size: u32) -> Result<()> {
+fn resize(window: &WebviewWindow, size: &ShapeSize) -> Result<()> {
     trace!("resize window");
     window
         .set_size(Size::Physical(PhysicalSize {
-            width: size,
-            height: size,
+            width: size.width,
+            height: size.height,
         }))
         .inspect_err(|e| error!("failed to resize window: {}", e))?;
     Ok(())
@@ -44,19 +47,20 @@ fn resize(window: &WebviewWindow, size: u32) -> Result<()> {
 #[instrument(skip_all)]
 pub fn setup(window: &WebviewWindow, config: &AppConfig) -> Result<()> {
     debug!("setup window");
-    let scale = window
+    let factor = window
         .scale_factor()
         .inspect_err(|e| error!("failed to get window scale factor: {}", e))?;
-    let canvas_size = config.shape.size();
-    let size = if scale != 1.0 {
-        debug!("scale factor: {scale}");
-        (scale * canvas_size as f64).round_ties_even() as u32
-    } else {
-        canvas_size
-    };
-    debug!("window pixel size: {size}");
-    resize(window, size)?;
-    center(window, size)?;
+    let mut shape_size = config.shape.size();
+    if factor != 1.0 {
+        info!("scale factor: {factor}");
+        shape_size.scale(factor);
+    }
+    debug!(
+        "window pixel size: {}x{}",
+        shape_size.width, shape_size.height
+    );
+    resize(window, &shape_size)?;
+    center(window, &shape_size)?;
 
     window
         .set_content_protected(config.protected)

@@ -10,13 +10,13 @@ and run it.
 
 ## configuration
 
-You can change things like the crosshair color, shape (crosshair or dot),
+You can change things like the crosshair color, shape (crosshair, dot or 2 vertical lines),
 transparency, size, thickness, gap etc…
 
 Sapin ship with a tray icon, right click on it to access the settings. \
 Click _Config_ to open the configuration file location and open
 `config.toml` with notepad (or any text editor) to modify it. \
-The crosshair overlay is hot reloaded when the config file is saved.
+The crosshair overlay is hot reloaded when the config file is saved (Ctrl-S).
 
 ## FAQ
 

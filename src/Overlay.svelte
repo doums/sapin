@@ -5,8 +5,8 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { blur } from 'svelte/transition';
-  import { isCrosshair } from './types';
-  import { drawCrosshair, drawDot } from './draw';
+  import { isCrosshair, isDot, type ShapeSize } from './types';
+  import { drawCrosshair, drawDot, drawTwix } from './draw';
   import type { Shape } from './types';
   import { cfg } from './store';
 
@@ -15,35 +15,29 @@
   let alpha: number;
   let debug: boolean;
   let canvas: HTMLCanvasElement | undefined = $state();
-  let size: number;
-
-  const shapeSize = (shape: Shape) => {
-    if (isCrosshair(shape)) {
-      return shape.size;
-    } else {
-      return shape.radius * 2;
-    }
-  };
+  let size: ShapeSize;
 
   const updateCanvas = () => {
     if (!canvas) {
       console.error('canvas not set');
       return;
     }
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = size.width;
+    canvas.height = size.height;
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       console.error('could not get 2d context');
       return;
     }
-    ctx.clearRect(0.0, 0.0, size, size);
+    ctx.clearRect(0.0, 0.0, size.width, size.height);
     ctx.fillStyle = color;
     ctx.globalAlpha = alpha;
     if (isCrosshair(shape)) {
       drawCrosshair(ctx, shape, debug);
-    } else {
+    } else if (isDot(shape)) {
       drawDot(ctx, shape, debug);
+    } else {
+      drawTwix(ctx, shape, debug);
     }
   };
 
@@ -53,10 +47,10 @@
       return;
     }
     shape = c.shape;
+    size = c.size;
     color = c.color;
     alpha = c.alpha;
     debug = c.debug;
-    size = shapeSize(c.shape);
     updateCanvas();
   });
 

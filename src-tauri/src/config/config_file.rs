@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::config::app_config::{AppConfig, Crosshair, Dot, Position};
+use crate::config::app_config::{AppConfig, Crosshair, Dot, Position, Twix};
 use crate::{util, APP_NAME};
 
 use anyhow::Result;
@@ -21,6 +21,7 @@ pub const CONFIG_FILE: &str = "config.toml";
 pub struct ConfigData {
     pub crosshair: Option<Crosshair>,
     pub dot: Option<Dot>,
+    pub twix: Option<Twix>,
     pub color: Option<String>,
     pub alpha: Option<f64>, // 0.0 - 1.0
     pub debug: Option<bool>,
@@ -114,6 +115,12 @@ gap = 12
 # to use a dot uncomment the following lines (and remove the [crosshair] section)
 #[dot]
 #radius = 4
+
+# to use 2 vertical lines
+#[twix]
+#height = 12
+#thickness = 4
+#gap = 6
 "##;
         if !path.is_file() {
             info!("config file does not exist, generating a default one");

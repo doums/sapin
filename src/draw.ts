@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import { type Crosshair, type Dot } from './types';
+import { type Crosshair, type Dot, type Twix } from './types';
 
 export function drawCrosshair(
   ctx: CanvasRenderingContext2D,
@@ -26,6 +26,23 @@ export function drawCrosshair(
       ctx.strokeRect(0.0, 0.0, gap, gap);
     }
     ctx.restore();
+  }
+}
+
+export function drawTwix(
+  ctx: CanvasRenderingContext2D,
+  twix: Twix,
+  debug: boolean,
+) {
+  const { height, thickness, gap } = twix;
+  const width = thickness * 2 + gap;
+  if (debug) {
+    ctx.strokeRect(0.0, 0.0, width, height);
+  }
+  ctx.fillRect(0.0, 0.0, width, height);
+  if (gap > 0) {
+    const middle = width / 2 - gap / 2;
+    ctx.clearRect(middle, 0.0, gap, height);
   }
 }
 

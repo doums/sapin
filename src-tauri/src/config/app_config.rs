@@ -22,10 +22,18 @@ pub struct Dot {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Twix {
+    pub height: u32,
+    pub thickness: u32,
+    pub gap: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Shape {
     Crosshair(Crosshair),
     Dot(Dot),
+    Twix(Twix),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -39,9 +47,17 @@ pub enum Position {
     },
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ShapeSize {
+    pub width: u32,
+    pub height: u32,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AppConfig {
     pub shape: Shape,
+    pub size: ShapeSize,
     pub color: String,
     pub alpha: f64, // 0.0 - 1.0
     pub debug: bool,
@@ -90,12 +106,16 @@ impl From<&Option<ConfigFile>> for AppConfig {
 impl From<ConfigData> for AppConfig {
     fn from(cfg: ConfigData) -> Self {
         let default = AppConfig::default();
+        let shape = cfg
+            .crosshair
+            .map(Shape::Crosshair)
+            .or_else(|| cfg.dot.map(Shape::Dot))
+            .or_else(|| cfg.twix.map(Shape::Twix))
+            .unwrap_or_default();
+        let size = shape.size();
         AppConfig {
-            shape: cfg
-                .crosshair
-                .map(Shape::Crosshair)
-                .or_else(|| cfg.dot.map(Shape::Dot))
-                .unwrap_or_default(),
+            shape,
+            size,
             color: cfg.color.unwrap_or(default.color),
             alpha: cfg.alpha.unwrap_or(default.alpha),
             debug: cfg.debug.unwrap_or(default.debug),
@@ -107,8 +127,11 @@ impl From<ConfigData> for AppConfig {
 
 impl Default for AppConfig {
     fn default() -> Self {
+        let shape = Shape::default();
+        let size = shape.size();
         AppConfig {
-            shape: Shape::default(),
+            shape,
+            size,
             color: "green".to_string(),
             alpha: 0.7,
             debug: false,
@@ -129,10 +152,33 @@ impl Default for Shape {
 }
 
 impl Shape {
-    pub fn size(&self) -> u32 {
+    pub fn size(&self) -> ShapeSize {
         match *self {
-            Shape::Crosshair(Crosshair { size, .. }) => size,
-            Shape::Dot(Dot { radius }) => radius * 2,
+            Shape::Crosshair(Crosshair { size, .. }) => ShapeSize::square(size),
+            Shape::Dot(Dot { radius }) => ShapeSize::square(radius * 2),
+            Shape::Twix(Twix {
+                height,
+                thickness,
+                gap,
+            }) => ShapeSize::new(thickness * 2 + gap, height),
         }
+    }
+}
+
+impl ShapeSize {
+    pub fn new(width: u32, height: u32) -> Self {
+        ShapeSize { width, height }
+    }
+
+    pub fn square(size: u32) -> Self {
+        ShapeSize {
+            width: size,
+            height: size,
+        }
+    }
+
+    pub fn scale(&mut self, factor: f64) {
+        self.width = (self.width as f64 * factor).round_ties_even() as u32;
+        self.height = (self.height as f64 * factor).round_ties_even() as u32;
     }
 }
