@@ -1,6 +1,6 @@
 [package]
 name = "sapin"
-version = "1.0.0"
+version = "1.1.0"
 description = "Simple crosshair overlay"
 authors = ["pierre <dommerc.pierre@gmail.com>"]
 edition = "2021"
