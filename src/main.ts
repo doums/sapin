@@ -4,11 +4,12 @@
 
 import './app.css';
 import App from './App.svelte';
+import { mount } from 'svelte';
 import { init as logInit } from './log';
 
 logInit();
 
-const app = new App({
+const app = mount(App, {
   target: document.getElementById('app')!,
 });
 

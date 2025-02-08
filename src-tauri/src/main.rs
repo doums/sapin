@@ -34,7 +34,10 @@ async fn main() {
     log::setup_tracing();
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_single_instance::init(|_, _, _| {
+            info!("a sapin instance is already running");
+        }))
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![config, log_js])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
@@ -66,7 +69,6 @@ async fn main() {
             info!("app setup done");
             Ok(())
         })
-        .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

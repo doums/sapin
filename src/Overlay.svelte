@@ -14,7 +14,7 @@
   let color: string;
   let alpha: number;
   let debug: boolean;
-  let canvas: HTMLCanvasElement;
+  let canvas: HTMLCanvasElement = $state();
   let size: number;
 
   const shapeSize = (shape: Shape) => {
@@ -64,4 +64,4 @@
   bind:this={canvas}
   width={32}
   height={32}
-/>
+></canvas>

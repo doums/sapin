@@ -2,12 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use strum::AsRefStr;
+use tauri::image::Image;
 use tauri::menu::{MenuBuilder, MenuEvent};
-use tauri::tray::{TrayIcon, TrayIconEvent};
-use tauri::{AppHandle, Manager};
-use tauri_plugin_shell::ShellExt;
+use tauri::tray::{TrayIcon, TrayIconBuilder, TrayIconEvent};
+use tauri::{include_image, AppHandle, Manager};
+use tauri_plugin_opener::OpenerExt;
 use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::config::app_config::AppConfig;
@@ -18,6 +19,7 @@ use crate::APP_NAME;
 
 pub const TRAY_ICON_ID: &str = "main";
 pub const TRAY_MENU_ID: &str = "tray_menu";
+const APP_ICON: Image<'_> = include_image!("icons/32x32.png");
 
 #[derive(AsRefStr, Debug)]
 enum MenuItemId {
@@ -50,12 +52,11 @@ fn on_menu_event(app: &AppHandle, event: MenuEvent) {
         }
         "Config" => {
             trace!("config menu clicked");
-            let shell = app.shell();
             let config_path = ConfigFile::try_from(app).ok();
             if let Some(cfg) = config_path {
-                shell
-                    .open(cfg.path.to_string_lossy(), None)
-                    .inspect_err(|e| error!("failed to shell open {}: {e}", cfg.path.display()))
+                app.opener()
+                    .open_path(cfg.path.to_string_lossy(), None::<&str>)
+                    .inspect_err(|e| error!("failed to open {}: {e}", cfg.path.display()))
                     .ok();
             }
         }
@@ -85,19 +86,17 @@ pub fn setup(app: &AppHandle) -> Result<()> {
         .build()
         .inspect_err(|e| error!("failed to build tray menu: {e}"))?;
 
-    let tray = app
-        .tray_by_id(TRAY_ICON_ID)
-        .ok_or_else(|| anyhow!("failed to get main tray"))?;
+    let tray = TrayIconBuilder::with_id(TRAY_ICON_ID)
+        .icon(APP_ICON)
+        .menu(&menu)
+        .on_tray_icon_event(on_tray_event)
+        .on_menu_event(on_menu_event)
+        .build(app)?;
 
     #[cfg(not(target_os = "linux"))]
     tray.set_tooltip(Some(APP_NAME))
         .inspect_err(|e| error!("failed to set tray tooltip {e}"))
         .ok();
-
-    tray.set_menu(Some(menu))
-        .inspect_err(|e| error!("failed to set tray menu {e}"))?;
-    tray.on_tray_icon_event(on_tray_event);
-    tray.on_menu_event(on_menu_event);
 
     Ok(())
 }
