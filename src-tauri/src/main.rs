@@ -40,6 +40,9 @@ async fn main() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![config, log_js])
         .setup(|app| {
+            let pkg = app.package_info();
+            info!("{}:{}", pkg.name, pkg.version,);
+
             let window = app.get_webview_window("main").unwrap();
             #[cfg(dev)]
             window.open_devtools();
