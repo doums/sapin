@@ -4,7 +4,6 @@
 
 <script lang="ts">
   import { onDestroy } from 'svelte';
-  import { blur } from 'svelte/transition';
   import { isCrosshair, isDot, type ShapeSize } from './types';
   import { drawCrosshair, drawDot, drawTwix } from './draw';
   import type { Shape } from './types';
@@ -58,7 +57,6 @@
 </script>
 
 <canvas
-  transition:blur={{ amount: 10 }}
   bind:this={canvas}
   width={32}
   height={32}

@@ -29,6 +29,6 @@
   });
 </script>
 
-<main class="h-full select-none flex justify-center items-center">
+<main class="h-full select-none">
   <Overlay />
 </main>
